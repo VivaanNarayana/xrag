@@ -1,0 +1,2 @@
+# This directory stores the vector database
+# The .vectorstore file is gitignored as it contains user-specific data
