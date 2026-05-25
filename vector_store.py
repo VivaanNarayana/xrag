@@ -25,7 +25,15 @@ class VectorStore:
         self.script_dir = Path(__file__).parent
         self.config_path = config_path or self.script_dir / "config.json"
         self.config = self._load_config()
-        self.storage_path = Path(self.config["storage_path"])
+        
+        # Make storage path relative to script directory
+        storage_path = self.config["storage_path"]
+        if not Path(storage_path).is_absolute():
+            # If relative, make it relative to script directory
+            self.storage_path = self.script_dir / storage_path
+        else:
+            self.storage_path = Path(storage_path)
+        
         self.storage_path.parent.mkdir(parents=True, exist_ok=True)
         
     def _load_config(self) -> Dict:
