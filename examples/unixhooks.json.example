@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "bash .cursor/skills/xrag/hooks/session_start.sh",
+        "type": "command"
+      }
+    ],
+    "afterAgentResponse": [
+      {
+        "command": "bash .cursor/skills/xrag/hooks/capture_response.sh",
+        "type": "command"
+      }
+    ],
+    "postToolUse": [
+      {
+        "command": "bash .cursor/skills/xrag/hooks/inject_context.sh",
+        "type": "command",
+        "matcher": "^(Read|SemanticSearch|Grep)$"
+      }
+    ]
+  }
+}
