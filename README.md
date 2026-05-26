@@ -133,7 +133,7 @@ When working on projects across multiple chat sessions, you often need to:
 
 - **Cursor IDE** with hooks support
 - **Python 3.8+** with pip
-- **Operating System**: Windows (full support), Mac/Linux (partial - hooks not yet implemented)
+- **Operating System**: Windows, Mac, or Linux (full support for all platforms)
 - ~200MB disk space (model + storage)
 
 ### Step 1: Clone the Skill into Your Project
@@ -166,8 +166,6 @@ cd .cursor/skills
 git clone https://github.com/VivaanNarayana/xrag.git
 ```
 
-**Note**: Mac/Linux users can install the skill, but hooks currently only work on Windows. Bash hook implementations are welcome contributions!
-
 ### Step 2: Install Python Dependencies
 
 ```bash
@@ -195,16 +193,19 @@ Copy the example hooks configuration to your project's `.cursor` folder:
 **Windows:**
 ```powershell
 # From your project root
-Copy-Item .cursor\skills\xrag\examples\hooks.json.example .cursor\hooks.json
+Copy-Item .cursor\skills\xrag\examples\windowshooks.json.example .cursor\hooks.json
 ```
 
 **Mac/Linux:**
 ```bash
 # From your project root
-cp .cursor/skills/xrag/examples/hooks.json.example .cursor/hooks.json
+cp .cursor/skills/xrag/examples/unixhooks.json.example .cursor/hooks.json
+
+# Make the shell scripts executable
+chmod +x .cursor/skills/xrag/hooks/*.sh
 ```
 
-**The hooks.json file should contain:**
+**Windows hooks.json should contain:**
 ```json
 {
   "version": 1,
@@ -219,6 +220,28 @@ cp .cursor/skills/xrag/examples/hooks.json.example .cursor/hooks.json
     }],
     "postToolUse": [{
       "command": "powershell -ExecutionPolicy Bypass -File .cursor/skills/xrag/hooks/inject_context.ps1",
+      "type": "command",
+      "matcher": "^(Read|SemanticSearch|Grep)$"
+    }]
+  }
+}
+```
+
+**Mac/Linux hooks.json should contain:**
+```json
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [{
+      "command": "bash .cursor/skills/xrag/hooks/session_start.sh",
+      "type": "command"
+    }],
+    "afterAgentResponse": [{
+      "command": "bash .cursor/skills/xrag/hooks/capture_response.sh",
+      "type": "command"
+    }],
+    "postToolUse": [{
+      "command": "bash .cursor/skills/xrag/hooks/inject_context.sh",
       "type": "command",
       "matcher": "^(Read|SemanticSearch|Grep)$"
     }]
@@ -544,7 +567,6 @@ recency_score = 1 / (1 + log(position_from_end))
 
 Contributions are welcome! Priority areas:
 
-- **Bash hooks** for Linux/macOS support
 - **Retrieval quality improvements** (better scoring algorithms)
 - **Storage optimization** (compression, better pruning strategies)
 - **Testing** (edge cases, performance benchmarks)
